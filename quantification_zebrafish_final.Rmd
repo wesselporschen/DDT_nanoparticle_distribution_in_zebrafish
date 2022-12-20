@@ -1,0 +1,257 @@
+---
+title: "DDT_nanoparticle_quantification"
+author: "Wessel_Porschen"
+date: '2022-12-19'
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(readxl)
+library(xlsx)
+library(ggplot2)
+```
+
+
+```{r}
+zebrafish <- read.csv("quant_data.csv", sep = ";", dec = ",")
+```
+
+
+```{r}
+head(zebrafish)
+```
+
+
+Gebruik van Mann-Whitney-Wilcoxon tests om biodistributies van ANIONISCHE psNPs te vergelijken met NEUTRALE liposomen. Mann-Whitney -> geen aanname van normaalverdeling. 
+
+## Totale Fluorescentie
+
+```{r}
+g_total <- ggplot(zebrafish, aes(nanotype, mean_total, fill = nanotype)) +           # ggplot2 barplot with mean
+ geom_point() +
+  geom_bar(position = "dodge",
+           stat = "summary",
+           fun = "mean",
+           alpha = 0.6)
+
+g_total
+```
+
+
+```{r}
+wilcox.test(mean_total ~ nanotype, data = zebrafish)
+```
+
+
+P = 0.2403, geen statistisch verschil aangetoond. 
+
+## Intravasculaire Fluorescentie
+
+```{r}
+g_intra <- ggplot(zebrafish, aes(nanotype, mean_intravascular, fill = nanotype)) +           # ggplot2 barplot with mean
+  geom_point() +
+  geom_bar(position = "dodge",
+           stat = "summary",
+           fun = "mean",
+           alpha = 0.6)
+
+g_intra
+```
+
+```{r}
+wilcox.test(mean_intravascular ~ nanotype, data = zebrafish)
+```
+
+P = 0.09307, geen statistisch verschil aangetoond
+
+## Extravasculaire Fluorescentie
+
+```{r}
+g_extra <- ggplot(zebrafish, aes(nanotype, mean_extravascular, fill = nanotype)) +           # ggplot2 barplot with mean
+ geom_point() +
+  geom_bar(position = "dodge",
+           stat = "summary",
+           fun = "mean",
+           alpha = 0.6)
+
+g_extra
+```
+
+```{r}
+wilcox.test(mean_extravascular ~ nanotype, data = zebrafish)
+```
+
+P = 0.8182, geen statistisch verschil aangetoond
+
+## Dorsale aorta fluorescentie
+
+
+```{r}
+g_aorta <- ggplot(zebrafish, aes(nanotype, mean_dorsal_aorta, fill = nanotype)) +           # ggplot2 barplot with mean
+ geom_point() +
+  geom_bar(position = "dodge",
+           stat = "summary",
+           fun = "mean",
+           alpha = 0.6)
+
+
+g_aorta
+```
+
+```{r}
+wilcox.test(mean_dorsal_aorta ~ nanotype, data = zebrafish)
+```
+
+P = 0.002165, duidelijk verschil tussen distributie in aorta tussen twee nanoparticles (meer signaal in NEUTRALE liposomen).
+
+## Caudale vein fluorescentie
+
+```{r}
+g_vein <- ggplot(zebrafish, aes(nanotype, mean_caudal_vein, fill = nanotype)) +           # ggplot2 barplot with mean
+  geom_point() +
+  geom_bar(position = "dodge",
+           stat = "summary",
+           fun = "mean",
+           alpha = 0.6)
+g_vein
+```
+
+```{r}
+wilcox.test(mean_caudal_vein ~ nanotype, data = zebrafish)
+```
+
+P = 0.04113, verschil aangetoond tussen distributie in caudale vein tussen twee nanoparticles (meer signaal in ANIONISCHE psNPs)
+
+No ratio caudalvein/dorsalaorta...
+
+## Ratio caudal vein over dorsal aorta
+
+
+```{r}
+g_vein_over_aorta <- ggplot(zebrafish, aes(nanotype, vein_over_aorta, fill = nanotype)) +           # ggplot2 barplot with mean
+  geom_point() +
+  geom_bar(position = "dodge",
+           stat = "summary",
+           fun = "mean",
+           alpha = 0.6)
+
+g_vein_over_aorta
+```
+
+```{r}
+wilcox.test(vein_over_aorta ~ nanotype, data = zebrafish)
+```
+
+p-value = 0.002165
+
+
+## ratio intravasculair over extravasculaire fluorescentie
+
+```{r}
+g_intra_over_extra <- ggplot(zebrafish, aes(nanotype, intra_over_extra, fill = nanotype)) +           # ggplot2 barplot with mean
+ geom_point() +
+  geom_bar(position = "dodge",
+           stat = "summary",
+           fun = "mean",
+           alpha = 0.6)
+
+g_intra_over_extra
+```
+
+```{r}
+wilcox.test(intra_over_extra ~ nanotype, data = zebrafish)
+```
+
+p-value = 0.06494. Niet significant aangetoond, maar toch mogelijk?
+
+
+# Interpretatie en discussie van kwantificatie
+
+"Aanname(s)": 
+  - Materiaal van twee nanoparticles wordt niet als verklarende factor genomen, alleen het verschil in lading (anionisch vs. neutraal)
+  - Maar 1 opname in de tijd (1hpi), net zoals bij onze eigen metingen, dus we kunnen niet zoveel zeggen over tijdsprofiel van biodistributie.
+
+Er is geen verschil aangetoond tussen het *totale* fluorescente signaal van de neutrale en anionische particles. Dit is opzich te verwachten omdat de totale hoeveelheid nanoparticles (in gram) hetzelfde was tussen de twee groepen (nog wel de vraag of beide nanoparticle groepen dezelfde "fluorescentie-per-gram"-sterkte hebben, maar daar moeten we maar van uitgaan). Als we kijken naar de plek van biodistributie kunnen we wel verschillen tussen de twee groepen opmerken:
+
+1) Als we kijken naar de ratio tussen intravasculaire en extravasculaire fluorescentie (maat voor distributie dus) observeren we een *net*-niet significant verschil (p = 0.06494) tussen de twee NPs. We zien dat de anionische psNPs een hogere intra/extra ratio hebben dan de neutrale liposomen. De neutrale liposomen lijken dus beter worden opgenomen uit de circulatie door de endotheelcellen (/ misschien ook macrofagen, andere celtypen?), en verspreiden zich beter naar het omringende weefsel dan de anionische psNPs (de ratio intravasculaire/extravasculaire distributie is 6.44 voor de anionische psNPs, en 5.51 voor de neutrale liposomen). 
+  - Dit kan misschien komen omdat hun neutrale lading ze lipofieler maakt en dat ze daarom beter celmembranen kunnen passeren(?)
+  - Is dit in contrast met eerder onderzoek dat aantoonde dat (stab1/2?) receptoren juist anionische deeltjes opnamen uit de circulatie? Werden deze receptoren wel in dit gedeelte van het zebravisembryo gevonden?
+  - Onthoudt goed dat dit technisch een niet-significant resultaat was en dus misschien ook niks betekent...
+  
+2) Als we kijken naar de distributie tussen de caudale vene en dorsale aorta (en de ratio hiervan) vinden we statistisch significant verschil (p = 0.002165 voor de vene/aorta ratio) tussen de twee nanoparticlegroepen: Voor beide groepen is het gemiddelde fluorescente signaal hoger in de caudale vene dan in de dorsale aorta, *maar* het contrast is veel hoger voor de anionische particles dan voor de neutrale particles (de ratio vene/aorta distributie is 3.09 voor de anionische psNPs en 1.23 voor de neutrale liposomen).
+
+# Effect sizes
+
+```{r}
+by_nano <- zebrafish %>%
+  group_by(nanotype)
+
+by_nano %>%
+  summarise_all(mean)
+```
+
+# Mooie grafieken
+
+```{r}
+g_total +
+  labs(x = "Nanoparticle Type", y = "Average Total Fluorescence [arb. unit]") +
+  theme_minimal() +
+  scale_fill_manual(values = c("#06B935", "#FFC107")) +
+  theme(legend.position = "none", text = element_text(size = 30))
+```
+
+```{r}
+g_aorta +
+  labs(x = "Nanoparticle Type", y = "Average Fluorescence in Caudal Aorta [arb. unit]") +
+  theme_minimal() +
+  scale_fill_manual(values = c("#06B935", "#FFC107")) +
+  theme(legend.position = "none", text = element_text(size = 30))
+```
+
+```{r}
+g_vein +
+  labs(x = "Nanoparticle Type", y = "Average Fluorescence in Caudal Vein [arb. unit]") +
+  theme_minimal() +
+  scale_fill_manual(values = c("#06B935", "#FFC107")) +
+ theme(legend.position = "none", text = element_text(size = 30))
+```
+
+```{r}
+g_vein_over_aorta +
+  labs(x = "Nanoparticle Type", y = "Ratio of Average Venous and Aortal Fluorescence") +
+  theme_minimal() +
+  scale_fill_manual(values = c("#06B935", "#FFC107")) +
+ theme(legend.position = "none", text = element_text(size = 30))
+```
+
+```{r}
+g_intra +
+  labs(x = "Nanoparticle Type", y = "Average Intravenous Fluorescence [arb. unit]") +
+  theme_minimal() +
+  scale_fill_manual(values = c("#06B935", "#FFC107")) +
+  theme(legend.position = "none", text = element_text(size = 30))
+```
+
+```{r}
+g_extra +
+  labs(x = "Nanoparticle Type", y = "Average Extravenous Fluorescence [arb. unit]") +
+  theme_minimal() +
+  scale_fill_manual(values = c("#06B935", "#FFC107")) +
+ theme(legend.position = "none", text = element_text(size = 30))
+```
+
+```{r}
+g_intra_over_extra +
+  labs(x = "Nanoparticle Type", y = "Ratio of  Average Intravenous and Extravenous Fluorescence") +
+  theme_minimal() +
+  scale_fill_manual(values = c("#06B935", "#FFC107")) +
+  theme(legend.position = "none", text = element_text(size = 30))
+```
