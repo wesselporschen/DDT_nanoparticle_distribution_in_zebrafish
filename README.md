@@ -11,5 +11,5 @@ Embryos were injected with fluorescent anionic polystyrene nanoparticles (100 nm
 
 Differences between mean measurements of the 2 nanoparticle groups were analyzed statistically using Mann-Whitney u-test in Rstudio, contained in Rmarkdown file.
 
-Part of project of the course "Drug Delivery Technology", third year course of the minor "Modern Drug Discovery" of "Bio-Pharmaceutical Sciences (BSc) at Leiden University. 
+Part of project of the course "Drug Delivery Technology", third year course of the minor "Modern Drug Discovery" of Bio-Pharmaceutical Sciences (BSc) at Leiden University. 
 December 2022.
